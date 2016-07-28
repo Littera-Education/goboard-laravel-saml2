@@ -4,7 +4,6 @@
     "keywords": ["laravel","saml", "saml2", "onelogin"],
     "homepage": "https://github.com/studysocial/laravel-saml2",
     "license": "MIT",
-    "version": "1.0.0",
     "authors": [
         {
             "name": "studysocial",
@@ -14,7 +13,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": ">=5.0.0",
-        "studysocial/php-saml": "dev-master#0982acbebf467fc6655406a6072753e9616898b2"
+        "studysocial/php-saml": "dev-master"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*"
