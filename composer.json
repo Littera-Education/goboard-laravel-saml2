@@ -12,8 +12,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": ">=5.0.0",
-        "studysocial/php-saml": "dev-master"
+        "illuminate/support": ">=5.0.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*"
@@ -23,11 +22,5 @@
             "Aacotroneo\\Saml2\\": "src/"
         }
     },
-    "minimum-stability": "dev",
-  "repositories": [
-  {
-   "type": "git",
-   "url": "https://github.com/studysocial/php-saml"
-  }
-    ]
+    "minimum-stability": "dev"
 }
