@@ -4,7 +4,7 @@
     "keywords": ["laravel","saml", "saml2", "onelogin"],
     "homepage": "https://github.com/studysocial/laravel-saml2",
     "license": "MIT",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "studysocial",
