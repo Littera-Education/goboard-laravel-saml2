@@ -49,6 +49,9 @@ class Saml2Controller extends Controller
         }
         $user = $this->saml2Auth->getSaml2User();
 
+        logger()->info($user->getAttributes());
+        logger()->info($user->getRawSamlAssertion());
+
         event(new Saml2LoginEvent($user));
 
         $redirectUrl = $user->getIntendedUrl();
@@ -56,7 +59,6 @@ class Saml2Controller extends Controller
         if ($redirectUrl !== null) {
             return redirect($redirectUrl);
         } else {
-
             return redirect(config('saml2_settings.loginRoute'));
         }
     }
