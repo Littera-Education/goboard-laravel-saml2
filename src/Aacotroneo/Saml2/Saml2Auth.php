@@ -55,6 +55,17 @@ class Saml2Auth
         $auth->login($returnTo);
     }
 
+
+    function wayfLogin($idPLoginUrl, $returnTo = null)
+    {
+        $auth = $this->auth;
+        $settings = $this->auth->getSettings();
+        $settings->setIdPSingleSignOnServiceUrl($idPLoginUrl);
+        $this->auth->setSettings($settings);
+
+        $auth->login($returnTo);
+    }
+
     /**
      * Initiate a saml2 logout flow. It will close session on all other SSO services. You should close
      * local session if applicable.

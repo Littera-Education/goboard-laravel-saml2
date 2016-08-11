@@ -30,4 +30,9 @@ Route::group([
         'as' => 'saml_sls',
         'uses' => 'Aacotroneo\Saml2\Http\Controllers\Saml2Controller@sls',
     ));
+
+    Route::get('/wayf', array(
+        'as' => 'saml_wayf',
+        'uses' => 'Aacotroneo\Saml2\Http\Controllers\Saml2Controller@wayfLogin',
+    ));
 });
