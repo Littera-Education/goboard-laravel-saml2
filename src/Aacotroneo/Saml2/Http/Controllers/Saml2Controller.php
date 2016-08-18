@@ -70,11 +70,11 @@ class Saml2Controller extends Controller
      */
     public function sls()
     {
-        $error = $this->saml2Auth->sls(config('saml2_settings.retrieveParametersFromServer'));
+       /* $error = $this->saml2Auth->sls(config('saml2_settings.retrieveParametersFromServer'));
         if (!empty($error)) {
             throw new \Exception("Could not log out");
         }
-
+*/
         return redirect(config('saml2_settings.logoutRoute')); //may be set a configurable default
     }
 
@@ -110,30 +110,8 @@ class Saml2Controller extends Controller
 
     private function getIdpLoginUrl($entityID)
     {
-      $entityIdSSOUrlMap = [
-
-          'https://shibb.its.appstate.edu/idp/shibboleth' => 'https://shibb.its.appstate.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://sso.ecu.edu/idp/shibboleth' => 'https://sso.ecu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://ecsu-iir.ecsu.edu/idp/shibboleth' => 'https://ecsu-iir.ecsu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://shibboleth.uncfsu.edu/idp/shibboleth' => 'https://shibboleth.uncfsu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://nctirlid01.ncat.edu/idp/shibboleth' => 'https://nctirlid01.ncat.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://idp.nccu.edu/idp/shibboleth' => 'https://idp.nccu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://shib.ncsu.edu/idp/shibboleth' => 'https://shib.ncsu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://idp.unca.edu/idp/shibboleth' => 'https://idp.unca.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://sso.unc.edu/idp' => 'https://sso.unc.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://webauth.uncc.edu/idp/shibboleth' => 'https://webauth.uncc.edu/idp/profile/SAML2/Redirect/SLO',
-          'https://idp.northcarolina.edu/idp/shibboleth' => 'https://idp.northcarolina.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://prdidp.uncg.edu/idp/shibboleth' => 'https://idp.uncg.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://idp.uncp.edu/idp/shibboleth' => 'https://idp.uncp.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://idp.uncw.edu/idp/shibboleth' => 'https://idp.uncw.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://uncsa-idp.northcarolina.edu/idp/shibboleth' => 'https://uncsa-idp.northcarolina.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://acme.unctv.org/idp/shibboleth' => 'https://acme.unctv.org/idp/profile/SAML2/Redirect/SSO',
-          'https://judge.wcu.edu/idp/shibboleth' => 'https://judge.wcu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://shib2.wssu.edu/idp/shibboleth' => 'https://shib2.wssu.edu/idp/profile/SAML2/Redirect/SSO',
-          'https://shibboleth.ncssm.edu/idp/shibboleth' => 'https://shibboleth.ncssm.edu/idp/profile/SAML2/Redirect/SSO'
-
-      ];
-      return $entityIdSSOUrlMap[$entityID];
+      $entityIdSSOData = config('saml2_settings.wayfIdp');
+      return $entityIdSSOData[$entityID]['sso_url'];
     }
 
 }

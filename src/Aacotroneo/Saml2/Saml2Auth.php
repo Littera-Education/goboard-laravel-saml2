@@ -3,6 +3,7 @@
 namespace Aacotroneo\Saml2;
 
 use OneLogin_Saml2_Auth;
+use OneLogin_Saml2_Response;
 use OneLogin_Saml2_Error;
 use OneLogin_Saml2_Utils;
 use Aacotroneo\Saml2\Events\Saml2LogoutEvent;
@@ -86,6 +87,32 @@ class Saml2Auth
 
         /** @var $auth OneLogin_Saml2_Auth */
         $auth = $this->auth;
+
+
+        $settings = $this->auth->getSettings();
+
+        $idpData = null;
+        $idpEntityId = null;
+        $wayfIdp = config('saml2_settings.wayfIdp');
+        $response = new OneLogin_Saml2_Response($settings, $_POST['SAMLResponse']);
+        $issuers = $response->getIssuers();
+        foreach ($issuers as $issuer) {
+            $trimmedIssuer = trim($issuer);
+            $idpData = $wayfIdp[$trimmedIssuer];
+            if(isset($idpData)) {
+                $idpEntityId = $trimmedIssuer;
+                break;
+            }
+        }
+
+        if(!$idpData) {
+            return array('error' => 'Unknown issuer [WAYF].');
+        }
+
+        $settings->setIdPSingleSignOnServiceUrl($idpData['sso_url']);
+        $settings->setIdPCert($idpData['x509cert']);
+        $settings->setIdpEntityId($idpEntityId);
+        $this->auth->setSettings($settings);
 
         $auth->processResponse();
 
