@@ -56,7 +56,14 @@ class Saml2Controller extends Controller
 
         $redirectUrl = $saml_user->getIntendedUrl();
 
-        $user = $this->tmsAuth->viaSchoolProfile($saml_user);
+        $profile = [
+            'id' => $saml_user->getUserId(),
+            'firstName' => $saml_user->getFirstName(),
+            'lastName' => $saml_user->getLastName(),
+            'email' => $saml_user->getEmail()
+        ];
+
+        $user = $this->tmsAuth->viaSchoolProfile($profile);
 
         $userToken = $this->tmsAuth->createToken($user);
 
