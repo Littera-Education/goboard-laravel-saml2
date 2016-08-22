@@ -6,19 +6,22 @@ use Aacotroneo\Saml2\Events\Saml2LoginEvent;
 use Aacotroneo\Saml2\Saml2Auth;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use App\Services\Auth\Auth;
 
 
 class Saml2Controller extends Controller
 {
 
     protected $saml2Auth;
+    protected $tmsAuth;
 
     /**
      * @param Saml2Auth $saml2Auth injected.
      */
-    function __construct(Saml2Auth $saml2Auth)
+    function __construct(Saml2Auth $saml2Auth, Auth $tmsAuth)
     {
         $this->saml2Auth = $saml2Auth;
+        $this->tmsAuth = $tmsAuth;
     }
 
 
@@ -47,19 +50,20 @@ class Saml2Controller extends Controller
             session()->flash('saml2_error', $errors);
             return redirect(config('saml2_settings.errorRoute'));
         }
-        $user = $this->saml2Auth->getSaml2User();
+        $saml_user = $this->saml2Auth->getSaml2User();
 
-        logger()->info($user->getAttributes());
-        logger()->info($user->getRawSamlAssertion());
+        event(new Saml2LoginEvent($saml_user));
 
-        event(new Saml2LoginEvent($user));
+        $redirectUrl = $saml_user->getIntendedUrl();
 
-        $redirectUrl = $user->getIntendedUrl();
+        $user = $this->tmsAuth->viaSchoolProfile($saml_user);
+
+        $userToken = $this->tmsAuth->createToken($user);
 
         if ($redirectUrl !== null) {
-            return redirect($redirectUrl);
+            return redirect($redirectUrl . '/' . $userToken);
         } else {
-            return redirect(config('saml2_settings.loginRoute'));
+            return redirect(config('saml2_settings.loginRoute') . '/' . $userToken);
         }
     }
 

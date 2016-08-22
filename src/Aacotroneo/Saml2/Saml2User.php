@@ -25,9 +25,18 @@ class Saml2User
     function getUserId()
     {
         $auth = $this->auth;
+        $trimmedIssuer = null;
+        $issuers = $auth->getIssuers();
+        foreach ($issuers as $issuer) {
+            $trimmedIssuer = strtolower(trim($issuer));
+            break;
+        }
+        $email = $this->getEmail();
+        if(!$trimmedIssuer || !$email) {
+            throw new \Exception('Can not build user id.');
+        }
 
-        return $auth->getNameId();
-
+        return hash('sha1', $trimmedIssuer . strtolower($email), false);
     }
 
     /**
@@ -68,6 +77,51 @@ class Saml2User
     function getNameId()
     {
         return $this->auth->getNameId();
+    }
+
+    function getEmail()
+    {
+        $attributes = $this->getAttributes();
+        foreach($attributes as $k => $v) {
+            if($k == 'urn:oid:0.9.2342.19200300.100.1.3') {
+                if($v && count($v) > 0) {
+                    return $v[0];
+                }
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    function getFirstName()
+    {
+        $attributes = $this->getAttributes();
+        foreach($attributes as $k => $v) {
+            if($k == 'urn:oid:2.5.4.42') {
+                if($v && count($v) > 0) {
+                    return $v[0];
+                }
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    function getLastName()
+    {
+        $attributes = $this->getAttributes();
+        foreach($attributes as $k => $v) {
+            if($k == 'urn:oid:2.5.4.4') {
+                if($v && count($v) > 0) {
+                    return $v[0];
+                }
+                break;
+            }
+        }
+
+        return null;
     }
 
 }
