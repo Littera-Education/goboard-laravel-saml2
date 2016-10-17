@@ -7,6 +7,7 @@ use Aacotroneo\Saml2\Saml2Auth;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Services\Auth\Auth;
+use Illuminate\Support\Facades\Log;
 
 
 class Saml2Controller extends Controller
@@ -116,7 +117,13 @@ class Saml2Controller extends Controller
     {
         $entityID = $request->query('entityID'); //selected campus idp
         $idpLoginUrl = $this->getIdpLoginUrl($entityID);
-        $this->saml2Auth->wayfLogin($idpLoginUrl, config('saml2_settings.loginRoute'));
+        // get the base 64 encoded return path and append it below. No need to decode.
+        $return = $request->input('return');
+        Log::info('return', ['r' => $return]);
+        if(!$return) {
+          $return = 'false';
+        }
+        $this->saml2Auth->wayfLogin($idpLoginUrl, config('saml2_settings.loginRoute') . '/' . $return);
     }
 
     private function getIdpLoginUrl($entityID)
