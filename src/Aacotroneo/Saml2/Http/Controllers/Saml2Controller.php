@@ -66,12 +66,14 @@ class Saml2Controller extends Controller
 
         $user = $this->tmsAuth->viaSchoolProfile($profile);
 
-        $userToken = $this->tmsAuth->createToken($user);
+        $userToken = $this->tmsAuth->getToken($user);
+        $userToken->setIsSSO(true);
+        $userTokenStr = $userToken->encode();
 
         if ($redirectUrl !== null) {
-            return redirect($redirectUrl . '/' . $userToken);
+            return redirect($redirectUrl . '/' . $userTokenStr);
         } else {
-            return redirect(config('saml2_settings.loginRoute') . '/' . $userToken);
+            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr);
         }
     }
 
