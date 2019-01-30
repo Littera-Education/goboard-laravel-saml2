@@ -65,15 +65,15 @@ class Saml2Controller extends Controller
         ];
 
         $user = $this->tmsAuth->viaSchoolProfile($profile);
-
         $userToken = $this->tmsAuth->getToken($user);
-        $userToken->setIsSSO(true);
+		$userToken->setIsSSO(true);
         $userTokenStr = $userToken->encode();
+		$userFBTokenStr = $this->tmsAuth->createFirebaseToken($user);
 
         if ($redirectUrl !== null) {
-            return redirect($redirectUrl . '/' . $userTokenStr);
+            return redirect($redirectUrl . '/' . $userTokenStr . '/' . $userFBTokenStr);
         } else {
-            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr);
+            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr . '/' . $userFBTokenStr);
         }
     }
 
