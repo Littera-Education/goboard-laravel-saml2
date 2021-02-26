@@ -8,6 +8,7 @@ use OneLogin_Saml2_Error;
 use OneLogin_Saml2_Utils;
 use Aacotroneo\Saml2\Events\Saml2LogoutEvent;
 
+Use DB;
 use Log;
 use Psr\Log\InvalidArgumentException;
 
@@ -92,26 +93,23 @@ class Saml2Auth
         $settings = $this->auth->getSettings();
 
         $idpData = null;
-        $idpEntityId = null;
-        $wayfIdp = config('saml2_settings.wayfIdp');
         $response = new OneLogin_Saml2_Response($settings, $_POST['SAMLResponse']);
         $issuers = $response->getIssuers();
-        foreach ($issuers as $issuer) {
-            $trimmedIssuer = trim($issuer);
-            $idpData = $wayfIdp[$trimmedIssuer];
-            if(isset($idpData)) {
-                $idpEntityId = $trimmedIssuer;
-                break;
-            }
-        }
+        
+        $idps = implode(',', $issuers);
+        $idp = DB::select("select * from school_sso where entity_id in ('$idps')");
 
+        $idpData = $idp[0];
         if(!$idpData) {
+            Log::error('Idp Data Missing in DB', ['idps' => $idps]);
             return array('error' => 'Unknown issuer [WAYF].');
         }
 
-        $settings->setIdPSingleSignOnServiceUrl($idpData['sso_url']);
-        $settings->setIdPCert($idpData['x509cert']);
-        $settings->setIdpEntityId($idpEntityId);
+        $settings->setIdPSingleSignOnServiceUrl($idpData->sso_url);
+        $public_key = empty($idpData->public_key_encryption) ? $idpData->public_key_signing : $idpData->public_key_encryption ;
+
+        $settings->setIdPCert($public_key);
+        $settings->setIdpEntityId($idpData->entity_id);
         $this->auth->setSettings($settings);
 
         $auth->processResponse();

@@ -117,9 +117,7 @@ class Saml2Controller extends Controller
 
     public function wayfLogin(Request $request)
     {
-        $entityID = $request->query('entityID'); //selected campus idp
-        $idpLoginUrl = $this->getIdpLoginUrl($entityID);
-        // get the base 64 encoded return path and append it below. No need to decode.
+        $idpLoginUrl = $request->query('entityID');
         $return = $request->input('return');
         Log::info('return', ['r' => $return]);
         if(!$return) {
@@ -127,11 +125,4 @@ class Saml2Controller extends Controller
         }
         $this->saml2Auth->wayfLogin($idpLoginUrl, config('saml2_settings.loginRoute') . '/' . $return);
     }
-
-    private function getIdpLoginUrl($entityID)
-    {
-      $entityIdSSOData = config('saml2_settings.wayfIdp');
-      return $entityIdSSOData[$entityID]['sso_url'];
-    }
-
 }
