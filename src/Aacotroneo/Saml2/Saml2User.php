@@ -3,6 +3,7 @@
 namespace Aacotroneo\Saml2;
 
 use OneLogin_Saml2_Auth;
+use Log;
 
 /**
  * A simple class that represents the user that 'came' inside the saml2 assertion
@@ -82,6 +83,10 @@ class Saml2User
     function getEmail()
     {
         $attributes = $this->getAttributes();
+        if (env('ALLOW_SAML_LOG')) {
+            Log::info('user_attributes saml2User->getEmail()', $attributes);
+            Log::info('------------------------- SAML LOG END --------------------------------' . PHP_EOL);
+        }
         foreach($attributes as $k => $v) {
             if($k == 'urn:oid:0.9.2342.19200300.100.1.3') {
                 if($v && count($v) > 0) {

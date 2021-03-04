@@ -7,6 +7,7 @@ use OneLogin_Saml2_Response;
 use OneLogin_Saml2_Error;
 use OneLogin_Saml2_Utils;
 use Aacotroneo\Saml2\Events\Saml2LogoutEvent;
+use Illuminate\Http\Request;
 
 Use DB;
 use Log;
@@ -72,10 +73,18 @@ class Saml2Auth
      * Initiate a saml2 logout flow. It will close session on all other SSO services. You should close
      * local session if applicable.
      */
-    function logout($returnTo = null, $nameId = null, $sessionIndex = null)
+    function logout($entity_id = null, $returnTo = null, $nameId = null, $sessionIndex = null)
     {
         $auth = $this->auth;
+        $settings = $this->auth->getSettings();
+        // add settings taken from database for certain IDP 
+        $settings->setIdpEntityId($entity_id);
+        $idpData = DB::select("select * from school_sso where entity_id = '$entity_id'");
+        $idp = $idpData[0];
 
+        $settings->setIdPSingleSignOutServiceUrl($idp->ssout_url);
+        $x509cert = empty($idp->public_key_encryption) ? $idp->public_key_signing : $idp->public_key_encryption;
+        $settings->setIdPCert($x509cert);
         $auth->logout($returnTo, [], $nameId, $sessionIndex);
     }
 
@@ -95,7 +104,10 @@ class Saml2Auth
         $idpData = null;
         $response = new OneLogin_Saml2_Response($settings, $_POST['SAMLResponse']);
         $issuers = $response->getIssuers();
-        
+        if (env('ALLOW_SAML_LOG')) {
+            Log::info('--------------------------------- SAML LOG ---------------------------' . PHP_EOL);
+            Log::info('$issuers saml2Auth->acs()', $issuers);
+        }
         $idps = implode(',', $issuers);
         $idp = DB::select("select * from school_sso where entity_id in ('$idps')");
 
