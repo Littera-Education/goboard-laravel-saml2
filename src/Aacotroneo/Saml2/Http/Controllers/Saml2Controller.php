@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Services\Auth\Auth;
 use Illuminate\Support\Facades\Log;
+use DB;
 
 
 class Saml2Controller extends Controller
@@ -52,7 +53,8 @@ class Saml2Controller extends Controller
             return redirect(config('saml2_settings.errorRoute'));
         }
         $saml_user = $this->saml2Auth->getSaml2User();
-
+        $sessionIndex = $saml_user->getSessionIndex();
+        $nameId = $saml_user->getNameId();
         event(new Saml2LoginEvent($saml_user));
 
         $redirectUrl = $saml_user->getIntendedUrl();
@@ -71,9 +73,9 @@ class Saml2Controller extends Controller
 		$userFBTokenStr = $this->tmsAuth->createFirebaseToken($user);
 
         if ($redirectUrl !== null) {
-            return redirect($redirectUrl . '/' . $userTokenStr . '/' . $userFBTokenStr);
+            return redirect($redirectUrl . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . $nameId);
         } else {
-            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr . '/' . $userFBTokenStr);
+            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . $nameId);
         }
     }
 
@@ -97,10 +99,18 @@ class Saml2Controller extends Controller
      */
     public function logout(Request $request)
     {
+        $saml_user = $this->saml2Auth->getSaml2User();
         $returnTo = $request->query('returnTo');
-        $sessionIndex = $request->query('sessionIndex');
-        $nameId = $request->query('nameId');
-        $this->saml2Auth->logout($returnTo, $nameId, $sessionIndex); //will actually end up in the sls endpoint
+        $sessionIndex = $request->query('saml_session_index');
+        if (empty($sessionIndex)) {
+            $sessionIndex = $saml_user->getSessionIndex();
+        }
+        $nameId = $request->query('saml_nameId');
+        if (empty($nameId)) {
+            $nameId = $saml_user->getNameId();
+        }
+        $entity_id = $request->query('entityID');
+        $this->saml2Auth->logout($entity_id, $returnTo, $nameId, $sessionIndex); //will actually end up in the sls endpoint
         //does not return
     }
 
