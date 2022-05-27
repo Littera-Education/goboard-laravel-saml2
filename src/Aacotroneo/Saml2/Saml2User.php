@@ -88,7 +88,7 @@ class Saml2User
             Log::info('------------------------- SAML LOG END --------------------------------' . PHP_EOL);
         }
         foreach($attributes as $k => $v) {
-            if($k == 'urn:oid:0.9.2342.19200300.100.1.3') {
+            if($k == 'urn:oid:0.9.2342.19200300.100.1.3' || $k === 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6') {
                 if($v && count($v) > 0) {
                     return $v[0];
                 }
@@ -111,7 +111,7 @@ class Saml2User
             }
         }
 
-        return null;
+        return "";
     }
 
     function getLastName()
@@ -126,7 +126,7 @@ class Saml2User
             }
         }
 
-        return null;
+        return "";
     }
 
 }

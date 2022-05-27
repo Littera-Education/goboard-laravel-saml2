@@ -73,9 +73,9 @@ class Saml2Controller extends Controller
 		$userFBTokenStr = $this->tmsAuth->createFirebaseToken($user);
 
         if ($redirectUrl !== null) {
-            return redirect($redirectUrl . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . $nameId);
+            return redirect($redirectUrl . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . base64_encode($nameId));
         } else {
-            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . $nameId);
+            return redirect(config('saml2_settings.loginRoute') . '/' . $userTokenStr . '/' . $userFBTokenStr . '/' . $sessionIndex . '/' . base64_encode($nameId));
         }
     }
 
