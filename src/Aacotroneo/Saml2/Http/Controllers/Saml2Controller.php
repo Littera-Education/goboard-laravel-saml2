@@ -56,6 +56,7 @@ class Saml2Controller extends Controller
         $sessionIndex = $saml_user->getSessionIndex();
         $nameId = $saml_user->getNameId();
         event(new Saml2LoginEvent($saml_user));
+        $attrs = $saml_user->getAttributes();
 
         $redirectUrl = $saml_user->getIntendedUrl();
 
@@ -65,6 +66,10 @@ class Saml2Controller extends Controller
             'lastName' => $saml_user->getLastName(),
             'email' => $saml_user->getEmail()
         ];
+
+        if ($attrs) {
+            $profile["attributes"] = $attrs;
+        }
 
         $user = $this->tmsAuth->viaSchoolProfile($profile);
         $userToken = $this->tmsAuth->getToken($user);
