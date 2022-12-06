@@ -1,5 +1,5 @@
 {
-    "name": "studysocial/laravel-saml2",
+    "name": "Littera-Education/goboard-laravel-saml2",
     "description": "A fork of the Laravel package for Saml2 integration as a SP (service provider) based on OneLogin toolkit, which is much lightweight than simplesamlphp",
     "keywords": ["laravel","saml", "saml2", "onelogin"],
     "homepage": "https://github.com/studysocial/laravel-saml2",
